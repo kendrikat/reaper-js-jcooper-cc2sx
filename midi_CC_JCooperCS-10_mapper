@@ -1,0 +1,46 @@
+desc: MIDI CC mapper for JLC CS-10^2
+
+@init
+
+CC_MSG = 11;
+CC_REC = $x17;
+CC_LED_REC = $x12;
+CC_LED_M1_SW = 10;
+CC_LED_M1_SW[0] = 0;
+CC_LED_M1_SW[1] = 0;
+CC_LED_M1_SW[2] = 0;
+CC_LED_M1_SW[3] = 0;
+CC_LED_M1_SW[4] = 0;
+CC_LED_M1_SW[5] = 0;
+CC_LED_M1_SW[6] = 0;
+CC_LED_M1_SW[7] = 0;
+
+@block
+
+while (
+  midirecv(mpos, msg1, msg23) ? (
+    status = msg1;
+    statusHi = (msg1/16)|0;
+    statusLo = msg1-(statusHi*16);
+    msg3 = (msg23/256)|0;
+    msg2 = msg23-(msg3*256);
+
+    (statusHi == CC_MSG) ? (
+      (msg3 == 00 && msg2 == CC_REC) ? ();
+      (msg3 == 00 && msg2 >= 0 && msg2 <= 7) ? (
+         buf = 1000;
+         buf[0] = $x15|0;
+         buf[1] = $x15|0;
+         buf[2] = $x00|0;
+         buf[3] = msg2;
+         buf[4] = (CC_LED_M1_SW[msg2] == 0) ? $x7F|0 : $x00|0;
+         CC_LED_M1_SW[msg2] = (CC_LED_M1_SW[msg2]) ? 0 : 1;
+
+        midisyx(mpos,buf,5);  // send sysex: F0 AA BB F7 
+     
+      );
+    );
+     blafasel = 1;
+  );
+);
+
