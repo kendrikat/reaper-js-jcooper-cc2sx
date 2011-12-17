@@ -1,0 +1,27 @@
+Reaper JS-Plugin "JCooper CS-10² - CC²SX mapper (LED)" [prototype] 2011
+
+no warranty - no copyright - right? this is a kind of simple JS-Hack. 
+by time i will dig into the "open controller surface API" (c++) which 
+looks really nice, but i haven't found enough docs, so i decided to 
+"hack" this little script to get used to the controllers mapping and 
+behaviour. ...and JS is quite easy to play with.
+
+preq:
+- controller needs in and out... obviously
+- enable midi-in/out + control commands for input
+- get keymap ...link... ( by ...author... )
+
+LED:
+- add script to one track which only receives CC channel 16
+- arm the track for recording: "Record: disable (input monitoring only)" 
+  (so that no CC, like arming tracks etc. are recorded)
+- unarming this track disables any lightshow :)
+
+future:
+- using API (c++) for controller surfaces
+- switch solo/mute/sel/loc
+- cross-nav display
+- jog-dial led
+- "null"-fader
+- sync track status/led
+- ...
