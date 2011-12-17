@@ -6,6 +6,9 @@ CC_MSG = 11;
 CC_PLY = $x16;
 CC_REC = $x17;
 CC_STP = $x15;
+CC_FWD = $x14;
+CC_RWD = $x13;
+CC_JOG = $x60;
 CC_LED_REC = $x12;
 CC_LED_REC_SW = 0;
 CC_LED_M1_SW = 10;
@@ -17,6 +20,11 @@ CC_LED_M1_SW[4] = 0;
 CC_LED_M1_SW[5] = 0;
 CC_LED_M1_SW[6] = 0;
 CC_LED_M1_SW[7] = 0;
+CC_LED_FWD = $x0F;
+CC_LED_RWD = $x0E;
+CC_LED_FWD_SW = 0;
+CC_LED_RWD_SW = 0;
+
 
 @block
 
@@ -28,7 +36,7 @@ while (
     msg3 = (msg23/256)|0;
     msg2 = msg23-(msg3*256);
 
-    ((statusHi == CC_MSG) && (msg3  == 00)) ? (
+    (statusHi == CC_MSG) ? (
 
       buf = 1000;
       buf[0] = $x15|0;
@@ -37,21 +45,49 @@ while (
       buf[3] = $x00|0;
       buf[4] = $x01|0;
 
-      (msg2 == CC_REC 
-       || ((msg2 == CC_STP || msg2 == CC_PLY)
-          && (CC_LED_REC_SW == 1))) ? (
-        buf[3] = CC_LED_REC;
-        buf[4] = (CC_LED_REC_SW == 0) ? $x7F|0 : $x00|0;
-         CC_LED_REC_SW = (CC_LED_REC_SW) ? 0 : 1;          
+      (msg3  == 00) ? (
+        (msg2 == CC_REC 
+         || ((msg2 == CC_STP || msg2 == CC_PLY)
+            && (CC_LED_REC_SW == 1))) ? (
+          buf[3] = CC_LED_REC;
+          buf[4] = (CC_LED_REC_SW == 0) ? $x7F|0 : $x00|0;
+           CC_LED_REC_SW = (CC_LED_REC_SW) ? 0 : 1;          
+        );
+
+        ((msg2 >= 0) && (msg2 <= 7)) ? (
+           buf[3] = msg2;
+           buf[4] = (CC_LED_M1_SW[msg2] == 0) ? $x7F|0 : $x00|0;
+             CC_LED_M1_SW[msg2] = (CC_LED_M1_SW[msg2]) ? 0 : 1;
+        );
       );
 
-      ((msg2 >= 0) && (msg2 <= 7)) ? (
-         buf[3] = msg2;
-         buf[4] = (CC_LED_M1_SW[msg2] == 0) ? $x7F|0 : $x00|0;
-           CC_LED_M1_SW[msg2] = (CC_LED_M1_SW[msg2]) ? 0 : 1;
-      );
+      (msg2 == CC_JOG) ? (
+         (msg3 == 1) ? (msg2 = CC_FWD; msg3 = 0;);
+         (msg3 == 127) ? (msg2 = CC_RWD; msg3 = 0;);
+      );       
+
+      (msg2 == CC_FWD || (msg2 == CC_JOG && msg3 == 1)) ? (
+         buf[3] = CC_LED_RWD;
+         buf[4] = $x00|0;
+         midisyx(mpos,buf,5);      
+
+         buf[3] = CC_LED_FWD;
+         buf[4] = (CC_LED_FWD_SW == 0) ? $x7F|0 : $x00|0;
+           CC_LED_FWD_SW = (!msg3) ? 0 : 1;
+      );       
+
+      (msg2 == CC_RWD) ? (
+         buf[3] = CC_LED_FWD;
+         buf[4] = $x00|0;
+         midisyx(mpos,buf,5);      
+  
+         buf[3] = CC_LED_RWD;
+         buf[4] = (CC_LED_RWD_SW == 0) ? $x7F|0 : $x00|0;
+           CC_LED_RWD_SW = (!msg3) ? 0 : 1;        
+      );       
 
       midisyx(mpos,buf,5);      
+
     );
      blafasel = 1;
   );
