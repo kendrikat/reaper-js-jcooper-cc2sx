@@ -4,7 +4,9 @@ desc: MIDI CC mapper for JLC CS-10^2
 
 CC_MSG = 11;
 CC_REC = $x17;
+CC_STP = $x15;
 CC_LED_REC = $x12;
+CC_LED_REC_SW = 0;
 CC_LED_M1_SW = 10;
 CC_LED_M1_SW[0] = 0;
 CC_LED_M1_SW[1] = 0;
@@ -25,20 +27,28 @@ while (
     msg3 = (msg23/256)|0;
     msg2 = msg23-(msg3*256);
 
-    (statusHi == CC_MSG) ? (
-      (msg3 == 00 && msg2 == CC_REC) ? ();
-      (msg3 == 00 && msg2 >= 0 && msg2 <= 7) ? (
-         buf = 1000;
-         buf[0] = $x15|0;
-         buf[1] = $x15|0;
-         buf[2] = $x00|0;
+    ((statusHi == CC_MSG) && (msg3  == 00)) ? (
+
+      buf = 1000;
+      buf[0] = $x15|0;
+      buf[1] = $x15|0;
+      buf[2] = $x00|0;
+      buf[3] = $x00|0;
+      buf[4] = $x01|0;
+
+      (msg2 == CC_REC || (msg2 == CC_STP && (CC_LED_REC_SW == 1))) ? (
+        buf[3] = CC_LED_REC;
+        buf[4] = (CC_LED_REC_SW == 0) ? $x7F|0 : $x00|0;
+         CC_LED_REC_SW = (CC_LED_REC_SW) ? 0 : 1;          
+      );
+
+      ((msg2 >= 0) && (msg2 <= 7)) ? (
          buf[3] = msg2;
          buf[4] = (CC_LED_M1_SW[msg2] == 0) ? $x7F|0 : $x00|0;
-         CC_LED_M1_SW[msg2] = (CC_LED_M1_SW[msg2]) ? 0 : 1;
-
-        midisyx(mpos,buf,5);  // send sysex: F0 AA BB F7 
-     
+           CC_LED_M1_SW[msg2] = (CC_LED_M1_SW[msg2]) ? 0 : 1;
       );
+
+      midisyx(mpos,buf,5);      
     );
      blafasel = 1;
   );
