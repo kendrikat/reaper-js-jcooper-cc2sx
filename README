@@ -3,6 +3,8 @@ Reaper JS-Plugin "JCooper CS-10² - CC/SX mapper (LED)"
 
 *[prototype] 2011*
 
+[Reaper] JS-Plugin - Mapping of MIDI-CC to SysEx ([JCooper CS-10² Controller])
+
 **no warranty - this is a simple JS-Hack**
 
 by time i will dig into the "open controller surface API" (c++) which
@@ -41,3 +43,5 @@ MIT License, full text of license see [here][License]
 
 [JS]: http://www.cockos.com/reaper/sdk/js/js.php#js_file
 [License]: https://github.com/kendrikat/reaper-js-jcooper-cc2sx/blob/master/LICENSE "LICENSE"
+[JCooper CS-10² Controller]: http://www.jlcooper.com/pages/CS10.html
+[Reaper]: http://reaper.fm
