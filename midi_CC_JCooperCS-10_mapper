@@ -1,3 +1,7 @@
+/*
+  MIDI CC mapper for JLC CS-10^2 - v1.0 - 2011 - Klaas Endrikat - MIT License
+*/
+
 desc: MIDI CC mapper for JLC CS-10^2
 
 @init
